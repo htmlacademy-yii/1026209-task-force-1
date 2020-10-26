@@ -18,7 +18,7 @@ class Task
     const CUSTOMER = 'customer';
     const EXECUTOR = 'executor';
 
-    public string $status;
+    private string $status;
 
     private int $executor_id;
     private int $customer_id;
@@ -69,36 +69,17 @@ class Task
 
     public static function getAvailableActions(string $role, string $status)
     {
-        switch ($status) {
-            case 'new':
-                if ($role == 'executor') {
-                    return self::ACTION_REPLY;
-                } else {
-                    return self::ACTION_CANCEL;
-                };
-                break;
-            case 'work':
-                if ($role == 'executor') {
-                    return self::ACTION_FAIL;
-                } else {
-                    return self::ACTION_DONE;
-                };
-                break;
-            default: return null;
-        }
+        $actionsMap = [
+            self::EXECUTOR => [
+                self::STATUS_NEW => self::ACTION_REPLY,
+                self::STATUS_WORK => self::ACTION_FAIL
+            ],
+            self::CUSTOMER => [
+                self::STATUS_NEW => self::ACTION_CANCEL,
+                self::STATUS_WORK => self::STATUS_DONE
+            ]
+        ];
+        return $actionsMap[$role][$status] ?? [];
     }
 }
 
-
-$task = new Task(10,20);
-
-$actionsMap = [
-    'reply' => 'Откликнуться',
-    'cancel' => 'Отменить',
-    'fail' => 'Отказаться',
-    'done' => 'Выполнено'
-];
-
-assert($task->getActionsMap() == $actionsMap);
-assert($task->getAvailableActions('executor', 'new') == TASK::ACTION_REPLY, 'Откликнуться на задачу');
-assert($task->getNextStatus('reply') == Task::STATUS_WORK, 'Перехо в статус в работе');
