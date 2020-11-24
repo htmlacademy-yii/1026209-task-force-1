@@ -1,9 +1,8 @@
 <?php
+require_once '../../vendor/autoload.php';
 
 use Taskforce\Models\Task;
 
-define('__ROOT__', dirname(dirname(__FILE__)));
-require(__ROOT__.'/Models/Task.php');
 
 $task = new Task(10,20);
 
